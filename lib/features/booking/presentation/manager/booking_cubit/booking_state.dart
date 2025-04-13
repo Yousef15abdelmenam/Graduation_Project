@@ -1,17 +1,32 @@
 part of 'booking_cubit.dart';
 
- @immutable
-sealed class BookingState {}
+@immutable
+abstract class BookingState {}
 
-final class BookingInitial extends BookingState {}
-final class BookingDateSelected extends BookingState {
-  final DateTime selectedDate;
-
-  BookingDateSelected(this.selectedDate); // Store the selected date
-}
-
-final class BookingTimeSlotsGenerated extends BookingState {
+class BookingSelection extends BookingState {
+  final DateTime date;
+  final int courtIndex;
+  final List<int> selectedTimeIndices;
   final List<Map<String, String>> timeSlots;
 
-  BookingTimeSlotsGenerated(this.timeSlots); // Store the generated time slots
+  BookingSelection({
+    required this.date,
+    required this.courtIndex,
+    required this.selectedTimeIndices,
+    required this.timeSlots,
+  });
+
+  BookingSelection copyWith({
+    DateTime? date,
+    int? courtIndex,
+    List<int>? selectedTimeIndices,
+    List<Map<String, String>>? timeSlots,
+  }) {
+    return BookingSelection(
+      date: date ?? this.date,
+      courtIndex: courtIndex ?? this.courtIndex,
+      selectedTimeIndices: selectedTimeIndices ?? this.selectedTimeIndices,
+      timeSlots: timeSlots ?? this.timeSlots,
+    );
+  }
 }
