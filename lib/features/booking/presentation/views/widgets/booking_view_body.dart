@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graduation_project/constants.dart';
 import 'package:graduation_project/features/booking/presentation/manager/booking_cubit/booking_cubit.dart';
+import 'package:graduation_project/features/booking/presentation/views/widgets/bottom_booking_confirmation.dart';
 import 'package:graduation_project/features/facilities/presentation/views/widgets/date_picker.dart';
 
 class BookingViewBody extends StatefulWidget {
@@ -15,12 +16,7 @@ class _BookingViewBodyState extends State<BookingViewBody> {
   int? selectedCourtIndex = 0;
   List<int> selectedTimeIndices = [];
 
-  List<String> courts = [
-    "Court 1",
-    "Court 2",
-    "Court 3",
-    "Court 4"
-  ];
+  List<String> courts = ["Court 1", "Court 2", "Court 3", "Court 4"];
 
   @override
   void initState() {
@@ -48,14 +44,11 @@ class _BookingViewBodyState extends State<BookingViewBody> {
       body: BlocBuilder<BookingCubit, BookingState>(builder: (context, state) {
         DateTime selectedDate = DateTime.now();
         int selectedCourt = 0;
+        List<Map<String, String>> timeSlots = [];
 
         if (state is BookingSelection) {
           selectedDate = state.date;
           selectedCourt = state.courtIndex;
-        }
-
-        List<Map<String, String>> timeSlots = [];
-        if (state is BookingSelection) {
           timeSlots = state.timeSlots;
         }
 
@@ -72,8 +65,11 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                     onTap: () {
                       setState(() {
                         selectedCourtIndex = index;
+                        selectedTimeIndices.clear(); // Reset selected times
                       });
-                      context.read<BookingCubit>().updateCourt(selectedCourtIndex ?? 0);
+                      context
+                          .read<BookingCubit>()
+                          .updateCourt(selectedCourtIndex ?? 0);
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -81,8 +77,8 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: selectedCourtIndex == index
-                            ? Colors.green // Keep original color for selected court
-                            : Colors.grey[800], // Keep original color for other courts
+                            ? Colors.green
+                            : Colors.grey[800],
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Text(
@@ -98,7 +94,7 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                 },
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -119,8 +115,8 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                       selectedDate.year == DateTime.now().year;
                   bool isPastTime = isToday &&
                       context.read<BookingCubit>().isPastTimeSlot(startTime);
-
-                  bool isBooked = context.read<BookingCubit>().isSlotBooked(selectedDate, selectedCourtIndex ?? 0, index);
+                  bool isBooked = context.read<BookingCubit>().isSlotBooked(
+                      selectedDate, selectedCourtIndex ?? 0, index);
 
                   return GestureDetector(
                     onTap: isPastTime || isBooked
@@ -131,12 +127,10 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                                 selectedTimeIndices.remove(index);
                               } else {
                                 selectedTimeIndices.add(index);
-                                context.read<BookingCubit>().bookSlot(
-                                  selectedCourtIndex ?? 0,
-                                  selectedDate,
-                                  index,
-                                );
                               }
+                              context
+                                  .read<BookingCubit>()
+                                  .updateSelectedTimes(selectedTimeIndices);
                             });
                           },
                     child: Column(
@@ -149,7 +143,7 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                             color: isPastTime
                                 ? Colors.red
                                 : selectedTimeIndices.contains(index)
-                                    ? Colors.green // Green for selected time slot
+                                    ? Colors.green
                                     : Colors.grey[800],
                             borderRadius: BorderRadius.circular(4),
                           ),
@@ -161,9 +155,8 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
-                                  color: isPastTime
-                                      ? Colors.black
-                                      : Colors.white,
+                                  color:
+                                      isPastTime ? Colors.black : Colors.white,
                                 ),
                               ),
                               const SizedBox(width: 10),
@@ -175,21 +168,24 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
-                                  color: isPastTime
-                                      ? Colors.black
-                                      : Colors.white,
+                                  color:
+                                      isPastTime ? Colors.black : Colors.white,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10)
+                        const SizedBox(height: 10),
                       ],
                     ),
                   );
                 },
               ),
             ),
+
+            // 👇 Bottom confirmation container
+if (selectedTimeIndices.isNotEmpty)
+BottomBookingConfirmation(selectedDate: selectedDate, timeSlots: timeSlots, selectedTimeIndices: selectedTimeIndices)
           ],
         );
       }),

@@ -21,7 +21,12 @@ class BookingCubit extends Cubit<BookingState> {
     if (state is BookingSelection) {
       final current = state as BookingSelection;
       final timeSlots = generateTimeSlots(selectedDate); 
-      emit(current.copyWith(date: selectedDate, timeSlots: timeSlots));
+     emit(current.copyWith(
+  date: selectedDate,
+  timeSlots: timeSlots,
+  selectedTimeIndices: [],
+));
+
     }
   }
 
@@ -29,7 +34,12 @@ class BookingCubit extends Cubit<BookingState> {
     if (state is BookingSelection) {
       final current = state as BookingSelection;
       final timeSlots = generateTimeSlots(current.date);  
-      emit(current.copyWith(courtIndex: courtIndex, timeSlots: timeSlots));
+      emit(current.copyWith(
+  courtIndex: courtIndex,
+  timeSlots: timeSlots,
+  selectedTimeIndices: [],
+));
+
     }
   }
 
@@ -40,13 +50,17 @@ class BookingCubit extends Cubit<BookingState> {
     }
   }
 
-  void updateDate(DateTime date) {
-    if (state is BookingSelection) {
-      final current = state as BookingSelection;
-      final timeSlots = generateTimeSlots(date); 
-      emit(current.copyWith(date: date, timeSlots: timeSlots));
-    }
+void updateDate(DateTime date) {
+  if (state is BookingSelection) {
+    final current = state as BookingSelection;
+    final timeSlots = generateTimeSlots(date); 
+    emit(current.copyWith(
+      date: date,
+      timeSlots: timeSlots,
+      selectedTimeIndices: [],
+    ));
   }
+}
 
   void updateBooking(DateTime date, int courtIndex) {
     final timeSlots = generateTimeSlots(date); 
