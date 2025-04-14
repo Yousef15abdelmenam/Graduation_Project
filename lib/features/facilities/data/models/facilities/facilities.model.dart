@@ -7,6 +7,7 @@ class FacilitiesModel extends Equatable {
 	final String? name;
 	final String? openingTime;
 	final String? closingTime;
+	final String? imageUrl;
 	final int? ownerId;
 	final Address? address;
 
@@ -15,6 +16,7 @@ class FacilitiesModel extends Equatable {
 		this.name, 
 		this.openingTime, 
 		this.closingTime, 
+		this.imageUrl, 
 		this.ownerId, 
 		this.address, 
 	});
@@ -24,6 +26,7 @@ class FacilitiesModel extends Equatable {
 				name: json['name'] as String?,
 				openingTime: json['openingTime'] as String?,
 				closingTime: json['closingTime'] as String?,
+				imageUrl: json['imageUrl'] as String?,
 				ownerId: json['ownerId'] as int?,
 				address: json['address'] == null
 						? null
@@ -35,6 +38,7 @@ class FacilitiesModel extends Equatable {
 				'name': name,
 				'openingTime': openingTime,
 				'closingTime': closingTime,
+				'imageUrl': imageUrl,
 				'ownerId': ownerId,
 				'address': address?.toJson(),
 			};
@@ -46,6 +50,7 @@ class FacilitiesModel extends Equatable {
 				name,
 				openingTime,
 				closingTime,
+				imageUrl,
 				ownerId,
 				address,
 		];

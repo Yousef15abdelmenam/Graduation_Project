@@ -30,6 +30,17 @@ class BookingCubit extends Cubit<BookingState> {
     }
   }
 
+
+   void confirmBooking(List<int> selectedTimeIndices) {
+    final currentState = state;
+    if (currentState is BookingSelection) {
+      // Update the state with the confirmed time slots
+      emit(currentState.copyWith(
+        selectedTimeIndices: selectedTimeIndices,
+      ));
+    }
+  }
+
   void updateCourt(int courtIndex) {
     if (state is BookingSelection) {
       final current = state as BookingSelection;

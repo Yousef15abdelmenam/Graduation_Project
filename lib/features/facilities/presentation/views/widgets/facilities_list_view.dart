@@ -21,7 +21,7 @@ class FacilitiesListView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding:const EdgeInsets.only(bottom: 20),
-                    child: FacilitiesTile(facilitiesModel: state.facilities[0],),
+                    child: FacilitiesTile(facilitiesModel: state.facilities[index],),
                   );
                 }),
           );

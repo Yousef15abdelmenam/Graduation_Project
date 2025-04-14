@@ -34,8 +34,8 @@ class FacilitiesTile extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
-              child: Image.asset(
-                'assets/images/sports-stadium.jpg',
+              child: Image.network(
+                'http://10.0.2.2:5000/${facilitiesModel.imageUrl!}',
                 height: 150,
                 width: double.infinity,
                 fit: BoxFit.cover,

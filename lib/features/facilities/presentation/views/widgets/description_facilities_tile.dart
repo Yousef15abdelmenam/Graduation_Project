@@ -26,14 +26,14 @@ final FacilitiesModel facilitiesModel;
           const SizedBox(
             height: 8,
           ),
-        const  Row(
+        Row(
             children: [
               Icon(
                 Icons.location_on,
                 color: Colors.grey,
               ),
               Text(
-                'Nasr City' ?? '',
+                facilitiesModel.address!.city! ,
                 maxLines: 2,
                 style:  TextStyle(color: Colors.grey, fontSize: 14),
               ),

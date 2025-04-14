@@ -156,7 +156,7 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                   color:
-                                      isPastTime ? Colors.black : Colors.white,
+                                      isPastTime ? Colors.white : Colors.white,
                                 ),
                               ),
                               const SizedBox(width: 10),
