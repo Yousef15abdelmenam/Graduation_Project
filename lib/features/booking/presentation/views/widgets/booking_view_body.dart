@@ -14,9 +14,23 @@ class BookingViewBody extends StatefulWidget {
 
 class _BookingViewBodyState extends State<BookingViewBody> {
   int? selectedCourtIndex = 0;
-  List<int> selectedTimeIndices = [];
+  final Map<String, List<int>> selectedSlots = {};
+  final Map<String, List<int>> confirmedSlots = {};
+  final int priceSlot = 300;
 
   List<String> courts = ["Court 1", "Court 2", "Court 3", "Court 4"];
+
+  String getKey(DateTime date, int courtIndex) {
+    return '${date.toIso8601String().split("T").first}|$courtIndex';
+  }
+
+  void handleConfirmation(DateTime date, int courtIndex) {
+    final key = getKey(date, courtIndex);
+    setState(() {
+      confirmedSlots[key] = [...?confirmedSlots[key], ...?selectedSlots[key]];
+      selectedSlots[key] = [];
+    });
+  }
 
   @override
   void initState() {
@@ -52,6 +66,10 @@ class _BookingViewBodyState extends State<BookingViewBody> {
           timeSlots = state.timeSlots;
         }
 
+        String key = getKey(selectedDate, selectedCourtIndex ?? 0);
+        List<int> selectedTimeIndices = selectedSlots[key] ?? [];
+        List<int> confirmedTimeIndices = confirmedSlots[key] ?? [];
+
         return Column(
           children: [
             const DatePickerWidget(),
@@ -65,7 +83,6 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                     onTap: () {
                       setState(() {
                         selectedCourtIndex = index;
-                        selectedTimeIndices.clear(); // Reset selected times
                       });
                       context
                           .read<BookingCubit>()
@@ -95,12 +112,13 @@ class _BookingViewBodyState extends State<BookingViewBody> {
               ),
             ),
             const SizedBox(height: 10),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('300 EGP', style: TextStyle(fontSize: 18)),
-                SizedBox(width: 10),
-                Text('Court Size : 5 vs 5', style: TextStyle(fontSize: 18))
+                Text('$priceSlot EGP', style: const TextStyle(fontSize: 18)),
+                const SizedBox(width: 10),
+                const Text('Court Size : 5 vs 5',
+                    style: TextStyle(fontSize: 18))
               ],
             ),
             const SizedBox(height: 10),
@@ -117,9 +135,10 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                       context.read<BookingCubit>().isPastTimeSlot(startTime);
                   bool isBooked = context.read<BookingCubit>().isSlotBooked(
                       selectedDate, selectedCourtIndex ?? 0, index);
+                  bool isConfirmed = confirmedTimeIndices.contains(index);
 
                   return GestureDetector(
-                    onTap: isPastTime || isBooked
+                    onTap: isPastTime || isBooked || isConfirmed
                         ? null
                         : () {
                             setState(() {
@@ -128,6 +147,7 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                               } else {
                                 selectedTimeIndices.add(index);
                               }
+                              selectedSlots[key] = selectedTimeIndices;
                               context
                                   .read<BookingCubit>()
                                   .updateSelectedTimes(selectedTimeIndices);
@@ -142,9 +162,11 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                           decoration: BoxDecoration(
                             color: isPastTime
                                 ? Colors.red
-                                : selectedTimeIndices.contains(index)
-                                    ? Colors.green
-                                    : Colors.grey[800],
+                                : isConfirmed
+                                    ? Colors.red
+                                    : selectedTimeIndices.contains(index)
+                                        ? Colors.green
+                                        : Colors.grey[800],
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
@@ -152,12 +174,10 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                             children: [
                               Text(
                                 timeSlots[index]['start']!,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color:
-                                      isPastTime ? Colors.white : Colors.white,
-                                ),
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white),
                               ),
                               const SizedBox(width: 10),
                               const Icon(Icons.arrow_forward,
@@ -165,12 +185,10 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                               const SizedBox(width: 10),
                               Text(
                                 timeSlots[index]['end']!,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color:
-                                      isPastTime ? Colors.black : Colors.white,
-                                ),
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white),
                               ),
                             ],
                           ),
@@ -182,10 +200,15 @@ class _BookingViewBodyState extends State<BookingViewBody> {
                 },
               ),
             ),
-
-            // 👇 Bottom confirmation container
-if (selectedTimeIndices.isNotEmpty)
-BottomBookingConfirmation(selectedDate: selectedDate, timeSlots: timeSlots, selectedTimeIndices: selectedTimeIndices)
+            if (selectedTimeIndices.isNotEmpty)
+              BottomBookingConfirmation(
+                selectedDate: selectedDate,
+                timeSlots: timeSlots,
+                selectedTimeIndices: selectedTimeIndices,
+                onConfirm: () =>
+                    handleConfirmation(selectedDate, selectedCourtIndex ?? 0),
+                priceSlot: priceSlot,
+              )
           ],
         );
       }),

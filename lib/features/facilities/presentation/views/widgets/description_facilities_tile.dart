@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:graduation_project/constants.dart';
 import 'package:graduation_project/features/facilities/data/models/facilities/facilities.model.dart';
 
 class DescriptionFacilitiesTile extends StatelessWidget {
@@ -19,8 +20,8 @@ final FacilitiesModel facilitiesModel;
             overflow: TextOverflow.ellipsis,
             style:const  TextStyle(
               color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(
@@ -28,14 +29,14 @@ final FacilitiesModel facilitiesModel;
           ),
         Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.location_on,
-                color: Colors.grey,
+                color: kPrimaryColor,
               ),
               Text(
                 facilitiesModel.address!.city! ,
                 maxLines: 2,
-                style:  TextStyle(color: Colors.grey, fontSize: 14),
+                style:  TextStyle(color: Colors.white, fontSize: 16),
               ),
             ],
           )

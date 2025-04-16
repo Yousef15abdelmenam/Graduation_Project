@@ -14,18 +14,32 @@ class LoginService {
     final dynamic response = await Api().post(
       url: 'http://10.0.2.2:5000/api/Auth/login',
       body: requestBody,
+      token: null,
     );
-    if (response is String) {
-      return {'token': response}; // Return as a map to avoid errors
-    }
-    // ✅ Check if response is a JSON object (user data)
-    else if (response is Map<String, dynamic>) {
-      return {'user': LoginModel.fromJson(response)};
-    }
 
-    // ❌ Handle unexpected response type
-    else {
-      throw Exception('Unexpected response format: $response');
+    // Log the entire response for debugging
+    print("🧪 Full Login Response: $response");
+
+    // Check if the response is a Map and contains 'data'
+    if (response is Map<String, dynamic> && response.containsKey('data')) {
+      final data = response['data'];
+      print("Login response data: $data");
+
+      // Check if 'message' exists and contains the failure message
+      if (data['message'] == "Invalid email or password") {
+        throw Exception("Login failed: Invalid email or password");
+      }
+
+      // Ensure the token is not null
+      if (data['token'] == null) {
+        throw Exception("Login failed: No token received");
+      }
+
+      // If we have a valid token, proceed to return user data
+      return {'user': LoginModel.fromJson(data)};
+    } else {
+      // If the response format is unexpected, throw an exception
+      throw Exception("Unexpected response format: $response");
     }
   }
 }

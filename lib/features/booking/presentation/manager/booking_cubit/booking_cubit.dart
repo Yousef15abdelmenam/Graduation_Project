@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 part 'booking_state.dart';
 
 class BookingCubit extends Cubit<BookingState> {
-  // Track bookings per court and date
   Map<String, Set<int>> bookedSlots = {};
+  
 
   BookingCubit()
       : super(BookingSelection(
@@ -14,24 +14,22 @@ class BookingCubit extends Cubit<BookingState> {
           selectedTimeIndices: [],
           timeSlots: [],
         )) {
-    updateBooking(DateTime.now(), 0); // initialize with today's date and first court
+    updateBooking(DateTime.now(), 0);
   }
 
   void selectDate(DateTime selectedDate) {
     if (state is BookingSelection) {
       final current = state as BookingSelection;
-      final timeSlots = generateTimeSlots(selectedDate); 
-     emit(current.copyWith(
-  date: selectedDate,
-  timeSlots: timeSlots,
-  selectedTimeIndices: [],
-));
-
+      final timeSlots = generateTimeSlots(selectedDate);
+      emit(current.copyWith(
+        date: selectedDate,
+        timeSlots: timeSlots,
+        selectedTimeIndices: [],
+      ));
     }
   }
 
-
-   void confirmBooking(List<int> selectedTimeIndices) {
+  void confirmBooking(List<int> selectedTimeIndices) {
     final currentState = state;
     if (currentState is BookingSelection) {
       // Update the state with the confirmed time slots
@@ -44,13 +42,12 @@ class BookingCubit extends Cubit<BookingState> {
   void updateCourt(int courtIndex) {
     if (state is BookingSelection) {
       final current = state as BookingSelection;
-      final timeSlots = generateTimeSlots(current.date);  
+      final timeSlots = generateTimeSlots(current.date);
       emit(current.copyWith(
-  courtIndex: courtIndex,
-  timeSlots: timeSlots,
-  selectedTimeIndices: [],
-));
-
+        courtIndex: courtIndex,
+        timeSlots: timeSlots,
+        selectedTimeIndices: [],
+      ));
     }
   }
 
@@ -61,20 +58,20 @@ class BookingCubit extends Cubit<BookingState> {
     }
   }
 
-void updateDate(DateTime date) {
-  if (state is BookingSelection) {
-    final current = state as BookingSelection;
-    final timeSlots = generateTimeSlots(date); 
-    emit(current.copyWith(
-      date: date,
-      timeSlots: timeSlots,
-      selectedTimeIndices: [],
-    ));
+  void updateDate(DateTime date) {
+    if (state is BookingSelection) {
+      final current = state as BookingSelection;
+      final timeSlots = generateTimeSlots(date);
+      emit(current.copyWith(
+        date: date,
+        timeSlots: timeSlots,
+        selectedTimeIndices: [],
+      ));
+    }
   }
-}
 
   void updateBooking(DateTime date, int courtIndex) {
-    final timeSlots = generateTimeSlots(date); 
+    final timeSlots = generateTimeSlots(date);
     emit(BookingSelection(
       date: date,
       courtIndex: courtIndex,
@@ -83,12 +80,11 @@ void updateDate(DateTime date) {
     ));
   }
 
-  // Generate time slots, ensuring the same starting time (6:00 AM) for all courts
   List<Map<String, String>> generateTimeSlots(DateTime date) {
     List<Map<String, String>> timeSlots = [];
-    DateTime startTime = DateTime(date.year, date.month, date.day, 6, 0); // Start at 6:00 AM for all courts
+    DateTime startTime = DateTime(date.year, date.month, date.day, 6, 0);
 
-    for (int i = 0; i < 24; i++) { // 24 time slots, one for each hour of the day
+    for (int i = 0; i < 24; i++) {
       DateTime endTime = startTime.add(const Duration(hours: 1));
       timeSlots.add({
         'start':
@@ -98,24 +94,22 @@ void updateDate(DateTime date) {
         'startTime': startTime.toIso8601String(),
         'endTime': endTime.toIso8601String(),
       });
-      startTime = endTime; // Increment to the next time slot
+      startTime = endTime;
     }
 
     return timeSlots;
   }
 
-  // Track booked time slots for a specific court and date
   void bookSlot(int courtIndex, DateTime selectedDate, int slotIndex) {
     final dateKey = "${selectedDate.toIso8601String()}_court_$courtIndex";
-    
+
     if (!bookedSlots.containsKey(dateKey)) {
-      bookedSlots[dateKey] = Set<int>(); // Initialize for new date/court
+      bookedSlots[dateKey] = Set<int>();
     }
 
-    bookedSlots[dateKey]?.add(slotIndex);  // Mark this slot as booked for this court and date
+    bookedSlots[dateKey]?.add(slotIndex);
   }
 
-  // Check if a specific time slot is already booked for the selected date
   bool isSlotBooked(DateTime selectedDate, int courtIndex, int slotIndex) {
     final dateKey = "${selectedDate.toIso8601String()}_court_$courtIndex";
     return bookedSlots[dateKey]?.contains(slotIndex) ?? false;
@@ -123,7 +117,8 @@ void updateDate(DateTime date) {
 
   bool isPastTimeSlot(DateTime slotTime) {
     DateTime now = DateTime.now();
-    DateTime currentTime = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+    DateTime currentTime =
+        DateTime(now.year, now.month, now.day, now.hour, now.minute);
     return currentTime.isAfter(slotTime);
   }
 }

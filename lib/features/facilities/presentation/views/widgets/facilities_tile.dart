@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:graduation_project/constants.dart';
 import 'package:graduation_project/core/utils/app_router.dart';
 import 'package:graduation_project/features/booking/presentation/views/booking_view.dart';
 import 'package:graduation_project/features/facilities/data/models/facilities/facilities.model.dart';
@@ -25,7 +26,7 @@ class FacilitiesTile extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.black,
+            color: kBackGroundColor,
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(6)),
         child: Column(

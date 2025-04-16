@@ -34,27 +34,30 @@ class FacilitiesViewBody extends StatelessWidget {
           ),
           IconButton(onPressed: () {}, icon:const Icon(FontAwesomeIcons.circleUser))
         ],
-        backgroundColor: Colors.transparent,
+        // backgroundColor: Colors.transparent,
+        backgroundColor: kPrimaryColor,
         elevation: 0,
       ),
       extendBodyBehindAppBar: true,
       body: Container(
         decoration: BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.topLeft,
-            radius: 0.7,
-            colors: [
-              lighterColor,
-              lighterColor,
-              lighterColor,
-              Colors.black, // Darker outer area
-            ],
-          ),
+          // gradient: RadialGradient(
+          //   center: Alignment.topLeft,
+          //   radius: 0.7,
+          //   colors: [
+          //     lighterColor,
+          //     lighterColor,
+          //     lighterColor,
+          //     Colors.black, // Darker outer area
+          //   ],
+          // ),
+          color: kBackGroundColor
         ),
         child: const Padding(
           padding:  EdgeInsets.only(top: 90, right: 20, left: 20),
           child: Column(
             children: [
+              SizedBox(height: 20,),
               CustomTextField.CustomformTextField(
                 height: 40,
                 hintText: 'Search Court',

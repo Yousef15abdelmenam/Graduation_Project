@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -8,6 +10,7 @@ import 'package:graduation_project/core/utils/show_snack_bar.dart';
 import 'package:graduation_project/core/widgets/custom_button.dart';
 import 'package:graduation_project/core/widgets/custom_text_field.dart';
 import 'package:graduation_project/features/facilities/presentation/views/facilities_view.dart';
+import 'package:graduation_project/features/login/data/models/login_model.dart';
 import 'package:graduation_project/features/register/presentation/views/register_view.dart';
 import 'package:graduation_project/services/login_service.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -40,14 +43,14 @@ class _LoginViewState extends State<LoginView> {
           child: Form(
             key: formkey,
             child: ListView(children: [
-             const SizedBox(
+              const SizedBox(
                 height: 75,
               ),
               Image.asset(
                 'assets/images/sportsbookinglogo.png',
                 height: 100,
               ),
-             const Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Column(
@@ -72,10 +75,10 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ],
               ),
-             const SizedBox(
+              const SizedBox(
                 height: 75,
               ),
-             const Row(
+              const Row(
                 children: [
                   Text(
                     'Login',
@@ -83,7 +86,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ],
               ),
-             const SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CustomTextField.CustomformTextField(
@@ -92,7 +95,7 @@ class _LoginViewState extends State<LoginView> {
                 },
                 hintText: 'Email',
               ),
-             const SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               CustomTextField.CustomformTextField(
@@ -102,7 +105,7 @@ class _LoginViewState extends State<LoginView> {
                 },
                 hintText: 'Password',
               ),
-             const SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CustomButton(
@@ -112,17 +115,15 @@ class _LoginViewState extends State<LoginView> {
                     setState(() {});
 
                     try {
-                      final loginModel = await LoginService().loginUser(
+                      final result = await LoginService().loginUser(
                         email: email!,
                         password: password!,
                       );
-                      showSnackBar(context, 'Logged in successfully');
-                      // print('User logged in: ${loginModel.toJson()}');
 
-                      // Get.toNamed(FacilitiesView.id, arguments: email);
+                      showSnackBar(context, 'Logged in successfully');
                       GoRouter.of(context).push(AppRouter.kFacilitiesView);
                     } catch (ex) {
-                      showSnackBar(context, 'Error: $ex');
+                      showSnackBar(context,'Login failed: ${ex.toString()}');
                     }
 
                     isloading = false;
@@ -131,13 +132,13 @@ class _LoginViewState extends State<LoginView> {
                 },
                 text: 'Login',
               ),
-             const SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                 const Text(
+                  const Text(
                     "don't have an account ? ",
                     style: TextStyle(color: Colors.white),
                   ),
@@ -146,13 +147,13 @@ class _LoginViewState extends State<LoginView> {
                         // Get.toNamed(RegisterView.id);
                         GoRouter.of(context).push(AppRouter.kRegisterView);
                       },
-                      child:const Text(
+                      child: const Text(
                         'Register',
                         style: TextStyle(color: kPrimaryColor),
                       ))
                 ],
               ),
-             const SizedBox(
+              const SizedBox(
                 height: 150,
               )
             ]),

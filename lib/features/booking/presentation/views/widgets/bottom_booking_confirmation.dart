@@ -9,11 +9,13 @@ class BottomBookingConfirmation extends StatelessWidget {
     required this.selectedDate,
     required this.timeSlots,
     required this.selectedTimeIndices,
+    required this.onConfirm, required this.priceSlot,
   });
-
+  final int priceSlot;
   final DateTime selectedDate;
   final List<Map<String, String>> timeSlots;
   final List<int> selectedTimeIndices;
+  final VoidCallback onConfirm;
 
   List<List<int>> _groupConsecutiveIndices(List<int> indices) {
     if (indices.isEmpty) return [];
@@ -36,7 +38,10 @@ class BottomBookingConfirmation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormatted = DateFormat('EEE, MMM d').format(selectedDate);
+
     final groupedSlots = _groupConsecutiveIndices(selectedTimeIndices);
+
+    int totalPrice = selectedTimeIndices.length *priceSlot ;
 
     return Container(
       width: double.infinity,
@@ -69,8 +74,6 @@ class BottomBookingConfirmation extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-
-            // Time ranges
             Column(
               children: groupedSlots.map((group) {
                 final start = timeSlots[group.first]['start'];
@@ -99,14 +102,12 @@ class BottomBookingConfirmation extends StatelessWidget {
                 );
               }).toList(),
             ),
-
             const SizedBox(height: 6),
             Divider(
               height: 16,
               thickness: 0.8,
               color: Colors.grey[700],
             ),
-
             const Padding(
               padding: EdgeInsets.only(top: 4.0, bottom: 6),
               child: Text(
@@ -118,12 +119,10 @@ class BottomBookingConfirmation extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-
-            // Price
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   'Total Price:',
                   style: TextStyle(
                     fontSize: 13,
@@ -131,8 +130,8 @@ class BottomBookingConfirmation extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '300 EGP',
-                  style: TextStyle(
+                  '$totalPrice EGP',
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -141,8 +140,6 @@ class BottomBookingConfirmation extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-
-            // Slide confirmation
             Builder(
               builder: (context) {
                 return SizedBox(
@@ -156,14 +153,15 @@ class BottomBookingConfirmation extends StatelessWidget {
                     textStyle: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                     sliderButtonIcon: const Icon(
                       Icons.arrow_forward_ios,
                       color: Colors.green,
-                      size: 16, // smaller icon
+                      size: 16,
                     ),
                     onSubmit: () {
+                      onConfirm();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Booking Confirmed!")),
                       );
