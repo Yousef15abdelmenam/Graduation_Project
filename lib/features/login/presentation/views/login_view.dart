@@ -121,7 +121,7 @@ class _LoginViewState extends State<LoginView> {
                       );
 
                       showSnackBar(context, 'Logged in successfully');
-                      GoRouter.of(context).push(AppRouter.kFacilitiesView);
+                      GoRouter.of(context).push(AppRouter.kHomeView);
                     } catch (ex) {
                       showSnackBar(context,'Login failed: ${ex.toString()}');
                     }

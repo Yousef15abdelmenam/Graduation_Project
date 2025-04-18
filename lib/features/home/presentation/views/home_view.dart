@@ -15,7 +15,7 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         elevation: 0,
-        title: const Text("Home", style: TextStyle(color: Colors.white)),
+        title: const Text("Home", style: TextStyle(fontSize: 26,fontWeight: FontWeight.bold,color: Colors.white)),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
