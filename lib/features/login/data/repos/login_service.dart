@@ -1,8 +1,9 @@
 import 'package:graduation_project/core/utils/api.dart';
+import 'package:graduation_project/core/utils/auth_manager.dart';
 import 'package:graduation_project/features/login/data/models/login_model.dart';
 
 class LoginService {
-  Future<dynamic> loginUser({
+  Future<Map<String, dynamic>> loginUser({
     required String email,
     required String password,
   }) async {
@@ -11,34 +12,39 @@ class LoginService {
       'password': password,
     };
 
-    final dynamic response = await Api().post(
+    final response = await Api().post(
       url: 'http://10.0.2.2:5000/api/Auth/login',
       body: requestBody,
       token: null,
     );
 
-    // Log the entire response for debugging
     print("🧪 Full Login Response: $response");
 
-    // Check if the response is a Map and contains 'data'
     if (response is Map<String, dynamic> && response.containsKey('data')) {
-      final data = response['data'];
+      var data = response['data'];
       print("Login response data: $data");
 
-      // Check if 'message' exists and contains the failure message
-      if (data['message'] == "Invalid email or password") {
-        throw Exception("Login failed: Invalid email or password");
+      // Handle case where data might contain another 'data' key
+      if (data is Map<String, dynamic> && data.containsKey('data')) {
+        data = data['data'];
+        print("Nested data extracted: $data");
       }
 
-      // Ensure the token is not null
-      if (data['token'] == null) {
-        throw Exception("Login failed: No token received");
-      }
+      if (data is Map<String, dynamic>) {
+        final userModel = LoginModel.fromJson(data);
+        print("Parsed LoginModel: id=${userModel.id}, token=${userModel.token}, email=${userModel.email}");
 
-      // If we have a valid token, proceed to return user data
-      return {'user': LoginModel.fromJson(data)};
+        if (userModel.token == null || userModel.token!.isEmpty) {
+          throw Exception("Login failed: Token is null or empty. Parsed data: $data");
+        }
+
+        await AuthManager.setAuthToken(userModel.token!);
+        print("✅ Token stored successfully: ${userModel.token}");
+        return {'user': userModel};
+      } else {
+        throw Exception("Data field is not a valid JSON object: $data");
+      }
     } else {
-      // If the response format is unexpected, throw an exception
       throw Exception("Unexpected response format: $response");
     }
   }

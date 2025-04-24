@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:graduation_project/constants.dart';
+import 'package:graduation_project/core/utils/api_service.dart';
 import 'package:graduation_project/core/utils/app_router.dart';
+import 'package:graduation_project/core/utils/auth_manager.dart';
 import 'package:graduation_project/core/utils/show_snack_bar.dart';
 import 'package:graduation_project/core/widgets/custom_button.dart';
 import 'package:graduation_project/core/widgets/custom_text_field.dart';
@@ -111,8 +113,9 @@ class _LoginViewState extends State<LoginView> {
               CustomButton(
                 ontap: () async {
                   if (formkey.currentState!.validate()) {
-                    isloading = true;
-                    setState(() {});
+                    setState(() {
+                      isloading = true;
+                    });
 
                     try {
                       final result = await LoginService().loginUser(
@@ -120,14 +123,32 @@ class _LoginViewState extends State<LoginView> {
                         password: password!,
                       );
 
-                      showSnackBar(context, 'Logged in successfully');
-                      GoRouter.of(context).push(AppRouter.kHomeView);
-                    } catch (ex) {
-                      showSnackBar(context,'Login failed: ${ex.toString()}');
-                    }
+                      if (result != null && result['user'] != null) {
+                        LoginModel user = result['user'];
 
-                    isloading = false;
-                    setState(() {});
+                        if (user.token != null && user.token!.isNotEmpty) {
+                          await AuthManager.setAuthToken(user.token!);
+                          print(
+                              'Token set successfully in LoginView: ${user.token}');
+                          print(
+                              'AuthManager token after login: ${AuthManager.authToken}');
+                          showSnackBar(context, 'Logged in successfully');
+                          GoRouter.of(context).push(AppRouter.kHomeView);
+                        } else {
+                          showSnackBar(
+                              context, 'Login failed: Token is null or empty');
+                        }
+                      } else {
+                        showSnackBar(context,
+                            'Login failed: Invalid response from server');
+                      }
+                    } catch (ex) {
+                      showSnackBar(context, 'Login failed: ${ex.toString()}');
+                    } finally {
+                      setState(() {
+                        isloading = false;
+                      });
+                    }
                   }
                 },
                 text: 'Login',

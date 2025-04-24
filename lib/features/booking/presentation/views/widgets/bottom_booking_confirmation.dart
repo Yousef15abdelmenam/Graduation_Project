@@ -17,24 +17,23 @@ class BottomBookingConfirmation extends StatelessWidget {
   final List<int> selectedTimeIndices;
   final VoidCallback onConfirm;
 
-  List<List<int>> _groupConsecutiveIndices(List<int> indices) {
-    if (indices.isEmpty) return [];
-    indices.sort();
-    List<List<int>> groups = [];
-    List<int> currentGroup = [indices.first];
+List<List<int>> _groupConsecutiveIndices(List<int> indices) {
+  if (indices.isEmpty) return [];
+  indices.sort();
+  List<List<int>> groups = [];
+  List<int> currentGroup = [indices.first];
 
-    for (int i = 1; i < indices.length; i++) {
-      if (indices[i] == indices[i - 1] + 1) {
-        currentGroup.add(indices[i]);
-      } else {
-        groups.add(currentGroup);
-        currentGroup = [indices[i]];
-      }
+  for (int i = 1; i < indices.length; i++) {
+    if (indices[i] == indices[i - 1] + 1) {
+      currentGroup.add(indices[i]);
+    } else {
+      groups.add(List<int>.from(currentGroup)); // Create a copy
+      currentGroup = [indices[i]];
     }
-    groups.add(currentGroup);
-    return groups;
   }
-
+  groups.add(List<int>.from(currentGroup)); // Add the last group
+  return groups;
+}
   @override
   Widget build(BuildContext context) {
     final dateFormatted = DateFormat('EEE, MMM d').format(selectedDate);
@@ -76,7 +75,13 @@ class BottomBookingConfirmation extends StatelessWidget {
             const SizedBox(height: 6),
             Column(
               children: groupedSlots.map((group) {
+                 if (group.isEmpty || group.first >= timeSlots.length) {
+                return const SizedBox.shrink(); // Return empty widget if invalid
+              }
                 final start = timeSlots[group.first]['start'];
+                if (group.last >= timeSlots.length) {
+                return const SizedBox.shrink();
+              }
                 final end = timeSlots[group.last]['end'];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
@@ -162,9 +167,9 @@ class BottomBookingConfirmation extends StatelessWidget {
                     ),
                     onSubmit: () {
                       onConfirm();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Booking Confirmed!")),
-                      );
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(content: Text("Booking Confirmed!")),
+                      // );
                     },
                   ),
                 );

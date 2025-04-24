@@ -30,3 +30,13 @@ class BookingSelection extends BookingState {
     );
   }
 }
+
+class BookingLoading extends BookingState {}
+
+class BookingError extends BookingState {
+  final String message;
+
+  BookingError(this.message);
+}
+
+class BookingSuccess extends BookingState {}

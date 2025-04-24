@@ -5,6 +5,7 @@ import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:graduation_project/constants.dart';
 import 'package:graduation_project/core/utils/app_router.dart';
+import 'package:graduation_project/core/utils/auth_manager.dart';
 import 'package:graduation_project/core/utils/service_locator.dart';
 import 'package:graduation_project/features/facilities/data/repos/facilities_repo_impl.dart';
 import 'package:graduation_project/features/facilities/presentation/manager/facilities_cubit/facilities_cubit.dart';
@@ -12,6 +13,9 @@ import 'package:graduation_project/features/splash/presentation/views/splash_vie
 
 void main() async {
   setup();
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthManager.loadAuthToken();
+
   runApp(const GraduationProject());
 }
 
